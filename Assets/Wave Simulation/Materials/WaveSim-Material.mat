@@ -54,6 +54,7 @@ Material:
     - _Glossiness: 0.5
     - _Metallic: 0
     - _OcclusionStrength: 1
+    - _RefractionStrength: 0.05
     - _Smoothness: 0.95
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -62,7 +63,7 @@ Material:
     - _WarpAmplitude: 0.5
     - _WarpFrequency: 1
     - _WarpSpeed: 0.3
-    - _WaveCount: 32
+    - _WaveCount: 16
     - _WaveFunc: 1
     m_Colors:
     - _BaseColor: {r: 0.25493047, g: 0.46152353, b: 0.5849056, a: 0.8}

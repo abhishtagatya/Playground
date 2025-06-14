@@ -18,7 +18,7 @@ Shader "Playground/WaveSim"
     	
     	[NoScaleOffset] _CustomReflection("Reflection Cubemap", CUBE) = "" {}
 		_CustomReflection_HDR("HDR Decode Params", Vector) = (1, 1, 1, 1)
-    	
+	    
     	[Header(Wave Settings)]
     	[KeywordEnum(Sine, Exponent)] _WaveFunc ("Wave Function", Int) = 0
     	
@@ -98,7 +98,7 @@ Shader "Playground/WaveSim"
         	TEXTURECUBE(_CustomReflection);
 			SAMPLER(sampler_CustomReflection);
 			half4 _CustomReflection_HDR; // Needed to decode HDR (exposure & bias)
-
+        	
         	struct Attributes
         	{
         		half4 positionOS: POSITION;
@@ -173,12 +173,12 @@ Shader "Playground/WaveSim"
         		input.positionOS.y += displacement;
 
         		// Recalculate normal using numerical derivatives (central difference)
-			    float delta = 0.001; // Smaller = more accurate, but watch performance
+			    half delta = 0.001; // Smaller = more accurate, but watch performance
 			    float3 posX = input.positionOS + float3(delta, 0, 0);
 			    float3 posZ = input.positionOS + float3(0, 0, delta);
 
-			    float dy_dx = 0.0;
-			    float dy_dz = 0.0;
+			    half dy_dx = 0.0;
+			    half dy_dz = 0.0;
 
 			    for (int i = 0; i < _WaveCount; i++)
 			    {
@@ -186,7 +186,7 @@ Shader "Playground/WaveSim"
 			        half freq = _Frequency * (1.0 + i * 0.5);
 			        half speed = _Speed * (1.0 + i * 0.3);
 			        half amp = _Amplitude / (i + 1);
-			        float t = _Time.y * speed;
+			        half t = _Time.y * speed;
 
 			    	half2 warpedX = posX.xz + domainWarp(posX.xz, i);
 					half2 warpedZ = posZ.xz + domainWarp(posZ.xz, i);
@@ -197,17 +197,17 @@ Shader "Playground/WaveSim"
 			    	#endif
 
 			    	#ifdef _WAVEFUNC_EXPONENT
-						float waveX = dot(warpedX, dir.xy) * freq + t;
-						float waveZ = dot(warpedZ, dir.xy) * freq + t;
+						half waveX = dot(warpedX, dir.xy) * freq + t;
+						half waveZ = dot(warpedZ, dir.xy) * freq + t;
 
 						dy_dx += (exp(sin(waveX))) * cos(waveX) * amp * freq * dir.x;
 						dy_dz += (exp(sin(waveZ))) * cos(waveZ) * amp * freq * dir.y;
 			    	#endif
 			    }
         					
-			    float3 tangentX = float3(1, dy_dx, 0);
-			    float3 tangentZ = float3(0, dy_dz, 1);
-			    float3 normalOS = normalize(cross(tangentZ, tangentX));
+			    half3 tangentX = float3(1, dy_dx, 0);
+			    half3 tangentZ = float3(0, dy_dz, 1);
+			    half3 normalOS = normalize(cross(tangentZ, tangentX));
 
                 half3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
                 half3 normalWS = TransformObjectToWorldNormal(normalOS);
@@ -218,12 +218,6 @@ Shader "Playground/WaveSim"
                 return output;
         	}
 
-        	half Remap(half In, half2 InMinMax, half2 OutMinMax)
-			{
-        		float range = max(InMinMax.y - InMinMax.x, 1e-5);
-				return OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / range;
-			}
-
         	inline half3 DecodeHDREnvironment(half4 data, float4 decodeValues)
 			{
 			    return decodeValues.x * max(half3(0, 0, 0), data.rgb - decodeValues.yyy);
@@ -231,7 +225,7 @@ Shader "Playground/WaveSim"
 
         	half3 SampleReflection(half3 reflectDir, float roughness)
 			{
-			    float mip = roughness * 6.0; // Adjust based on max mip count (6 is typical)
+			    float mip = roughness * 6.0;
 			    half4 encoded = SAMPLE_TEXTURECUBE_LOD(_CustomReflection, sampler_CustomReflection, reflectDir, mip);
 			    return DecodeHDREnvironment(encoded, _CustomReflection_HDR);
 			}
@@ -273,7 +267,7 @@ Shader "Playground/WaveSim"
         			lit.rgb += reflectionColor * _EnvironmentReflections; // manually add to final result
         			//lit.rgb += (unity_AmbientSky + unity_AmbientEquator + unity_AmbientGround) * 0.2;
         		}
-        		
+
         		return lit;
         	}
         	
