@@ -26,7 +26,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 2
+  m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -38,6 +38,10 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _EnvironmentTexture:
+        m_Texture: {fileID: 8900000, guid: 6e998e53d0a82bb45928cd08a0fcfff3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Environment_Texture:
         m_Texture: {fileID: 8900000, guid: 6e998e53d0a82bb45928cd08a0fcfff3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -57,12 +61,15 @@ Material:
     m_Floats:
     - _Amplitude: 0.05
     - _EnvironmentReflection: 0.05
+    - _Environment_Reflection: 0.01
     - _Frequency: 2
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Smoothness: 0.8
     - _Speed: 1
     - _WaveCount: 32
     m_Colors:
     - _BaseColor: {r: 0.25490198, g: 0.4627451, b: 0.58431375, a: 0.8}
+    - _Base_Color: {r: 0, g: 0.44749874, b: 0.7207546, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
