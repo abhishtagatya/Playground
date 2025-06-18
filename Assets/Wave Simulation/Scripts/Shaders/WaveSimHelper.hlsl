@@ -30,13 +30,13 @@ inline half2 domainWarp(half2 pos, half freqency, half speed, half amplitude, ha
     return offset;
 }
 
-void WaveDisplacement_half(half3 PositionOS, int WaveCount, half Frequency, half Speed, half Amplitude, half Time, out half d)
+void WaveDisplacement_half(half3 PositionWS, int WaveCount, half Frequency, half Speed, half Amplitude, half Time, out half3 Displacement)
 {
-    d = 0.0;
-
+    half d = 0.0;
+    
     for (int i = 0; i < WaveCount; i++)
     {
-        half2 warpedPos = PositionOS.xz + domainWarp(PositionOS.xz, Frequency, Speed, Amplitude, Time, i);
+        half2 warpedPos = PositionWS.xz + domainWarp(PositionWS.xz, Frequency, Speed, Amplitude, Time, i);
         half wavePhase = dot(warpedPos, randomDir(i));
         			
         half freq = Frequency * (1.0 + i * 0.5);
@@ -47,14 +47,16 @@ void WaveDisplacement_half(half3 PositionOS, int WaveCount, half Frequency, half
             sin(wavePhase * freq + (Time + 0.1 * i) * speed)
         ) - 1) * amp;
     }
+
+    Displacement = half3(0, d, 0);
 }
 
-void FDNormalDisplacement_half(half3 PositionOS, int WaveCount, half Frequency, half Speed, half Amplitude, half Time, out half3 normalOS)
+void FDNormalDisplacement_half(half3 PositionWS, int WaveCount, half Frequency, half Speed, half Amplitude, half Time, out half3 normalOS)
 {
     half delta = 0.0001;
     
-    float3 posX = PositionOS + float3(delta, 0, 0);
-    float3 posZ = PositionOS + float3(0, 0, delta);
+    float3 posX = PositionWS + float3(delta, 0, 0);
+    float3 posZ = PositionWS + float3(0, 0, delta);
 
     half dy_dx = 0.0;
     half dy_dz = 0.0;
@@ -67,8 +69,8 @@ void FDNormalDisplacement_half(half3 PositionOS, int WaveCount, half Frequency, 
         half amp = Amplitude / (i + 1);
         half t = Time * speed;
 
-        half2 warpedX = posX.xz + domainWarp(posX.xz, Frequency, Speed, Amplitude, Time, i);;
-        half2 warpedZ = posZ.xz + domainWarp(posZ.xz, Frequency, Speed, Amplitude, Time, i);;
+        half2 warpedX = posX.xz + domainWarp(posX.xz, Frequency, Speed, Amplitude, Time, i);
+        half2 warpedZ = posZ.xz + domainWarp(posZ.xz, Frequency, Speed, Amplitude, Time, i);
 
         half waveX = dot(warpedX, dir.xy) * freq + t;
         half waveZ = dot(warpedZ, dir.xy) * freq + t;

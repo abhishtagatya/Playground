@@ -149,9 +149,11 @@ Shader "Playground/WaveSim"
         		
         		half displacement = 0.0;
 
+        		half3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
+        		
         		for (int i = 0; i < _WaveCount; i++)
         		{
-        			half2 warpedPos = input.positionOS.xz + domainWarp(input.positionOS.xz, i);
+        			half2 warpedPos = positionWS.xz + domainWarp(positionWS.xz, i);
         			half wavePhase = dot(warpedPos, randomDir(i));
         			
         			half freq = _Frequency * (1.0 + i * 0.5);
@@ -170,12 +172,12 @@ Shader "Playground/WaveSim"
         			
         		}
 
-        		input.positionOS.y += displacement;
+        		positionWS.y += displacement;
 
         		// Recalculate normal using numerical derivatives (central difference)
 			    half delta = 0.001; // Smaller = more accurate, but watch performance
-			    float3 posX = input.positionOS + float3(delta, 0, 0);
-			    float3 posZ = input.positionOS + float3(0, 0, delta);
+			    float3 posX = positionWS + float3(delta, 0, 0);
+			    float3 posZ = positionWS + float3(0, 0, delta);
 
 			    half dy_dx = 0.0;
 			    half dy_dz = 0.0;
@@ -209,7 +211,6 @@ Shader "Playground/WaveSim"
 			    half3 tangentZ = float3(0, dy_dz, 1);
 			    half3 normalOS = normalize(cross(tangentZ, tangentX));
 
-                half3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
                 half3 normalWS = TransformObjectToWorldNormal(normalOS);
 
                 output.positionWS = positionWS;
